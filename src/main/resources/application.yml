@@ -1,6 +1,9 @@
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: API-GATEWAY
+
   cloud:
     gateway:
       routes:
@@ -23,6 +26,29 @@ spring:
           uri: lb:http://PAYMENT-SERVICE
           predicates:
             - Path=/api/v1/payments/**
+
+      default-filters:
+        - TokenRelay
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          gateway:
+            provider: my-provider
+            clientId: microservices-rest-api
+            client-secret: fb1C7HnF9pWc6sri0xjX1vo3MJ0AbzgG
+            authorization-grant-type: authorization_code
+            redirectUri: http://localhost:8085/login/oauth2/code/microservices-rest-api
+            scope: openid
+        provider:
+          my-provider:
+            issuerUri:  http://localhost:8081/realms/Ecommerce
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/Ecommerce
+          jwk-set-uri: http://localhost:8081/realms/Ecommerce/protocol/openid-connect/certs
 
 server:
   port: 8085
